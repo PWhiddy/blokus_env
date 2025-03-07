@@ -72,6 +72,18 @@ void print_piece(const BlokusEnv *env, int piece_idx, int orientation) {
     }
 }
 
+// Function to count remaining tiles for a player
+int count_remaining_tiles(const BlokusEnv *env, int player) {
+    int remaining = 0;
+    for (int i = 0; i < NUM_PIECE_TYPES; i++) {
+        if (env->state.players[player].available_pieces[i]) {
+            // Add the size of this piece to the count
+            remaining += env->piece_types[i].orientations[0].size;
+        }
+    }
+    return remaining;
+}
+
 void display_available_pieces(const BlokusEnv *env, int player) {
     printf("\nAvailable pieces for Player %d:\n", player + 1);
     printf("-----------------------------\n");
@@ -86,12 +98,25 @@ void display_available_pieces(const BlokusEnv *env, int player) {
     printf("-----------------------------\n");
 }
 
+// Display player scores including both tiles played and remaining
+void display_scores(const BlokusEnv *env) {
+    printf("\nCurrent Scores:\n");
+    printf("---------------\n");
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        int tiles_remaining = count_remaining_tiles(env, i);
+        printf("Player %d: %d points (Tiles placed), %d tiles remaining\n", 
+               i + 1, env->state.players[i].score, tiles_remaining);
+    }
+    printf("---------------\n");
+}
+
 Action get_human_action(const BlokusEnv *env) {
     int player = env->state.current_player;
     Action action;
     
     while (1) {
         display_available_pieces(env, player);
+        display_scores(env); // Show current scores including remaining tiles
         
         printf("Enter piece index, orientation, x, y (e.g., '3 0 5 7'): ");
         if (scanf("%hhd %hhd %hhd %hhd", &action.piece_idx, &action.orientation, 
@@ -110,83 +135,104 @@ Action get_human_action(const BlokusEnv *env) {
 }
 
 void play_auto_game() {
-    BlokusEnv env;
-    init_env(&env);
-    
-    int turn_count = 0;
-    
-    while (!env.state.game_over) {
-        // Clear screen (ANSI escape code)
-        printf("\033[2J\033[H");
+
+    bool fast = false;
+
+    for (int i = 0; i < 100; i++) {
+
+        BlokusEnv env;
+        init_env(&env);
         
-        // Show turn number
-        printf("Turn: %d\n", turn_count++);
+        int turn_count = 0;
         
-        // Show only the game board
-        display_board(&env.state);
-        
-        Action action;
-        int player = env.state.current_player;
-        
-        // Check if any actions are possible
-        Action possible_actions[1];
-        int num_actions = get_valid_actions(&env, player, possible_actions, 1);
-        
-        if (num_actions == 0) {
-            env.state.current_player = (env.state.current_player + 1) % NUM_PLAYERS;
-            continue;
+        while (!env.state.game_over) {
+            if (!fast) {
+                // Clear screen (ANSI escape code)
+                printf("\033[2J\033[H");
+                
+                // Show turn number
+                printf("Turn: %d\n", turn_count++);
+                
+                // Show the game board
+                display_board(&env.state);
+                
+                // Show current scores including remaining tiles
+                display_scores(&env);
+            }
+            Action action;
+            int player = env.state.current_player;
+            
+            // Check if any actions are possible
+            Action possible_actions[1];
+            int num_actions = get_valid_actions(&env, player, possible_actions, 1);
+            
+            if (num_actions == 0) {
+                env.state.current_player = (env.state.current_player + 1) % NUM_PLAYERS;
+                continue;
+            }
+            
+            // All players are random agents
+            action = get_random_action(&env);
+            
+            float reward;
+            bool game_over = step(&env, &action, &reward, fast);
+            
+            if (game_over) {
+                env.state.game_over = true;
+            }
+            
+            // Sleep for 250ms (4 moves per second)
+            if (!fast) {
+                usleep(250000);
+            }
+            //usleep(250000);
         }
-        
-        // All players are random agents
-        action = get_random_action(&env);
-        
-        float reward;
-        bool game_over = step(&env, &action, &reward);
-        
-        if (game_over) {
-            env.state.game_over = true;
-        }
-        
-        // Sleep for 250ms (4 moves per second)
-        usleep(250000);
-    }
-    
-    // Game over
-    printf("\033[2J\033[H");  // Clear screen
-    printf("Final board state:\n");
-    display_board(&env.state);
-    
-    printf("\n===== GAME OVER =====\n\n");
-    for (int i = 0; i < NUM_PLAYERS; i++) {
-        printf("Player %d score: %d\n", i + 1, env.state.players[i].score);
-    }
-    
-    // Find winner(s)
-    int max_score = -1;
-    for (int i = 0; i < NUM_PLAYERS; i++) {
-        if (env.state.players[i].score > max_score) {
-            max_score = env.state.players[i].score;
-        }
-    }
-    
-    printf("\nWinner(s): ");
-    bool first_winner = true;
-    for (int i = 0; i < NUM_PLAYERS; i++) {
-        if (env.state.players[i].score == max_score) {
-            if (!first_winner) printf(", ");
-            printf("Player %d", i + 1);
-            first_winner = false;
+        if (!fast) {
+            // Game over
+            printf("\033[2J\033[H");  // Clear screen
+            printf("Final board state:\n");
+            display_board(&env.state);
+            
+            printf("\n===== GAME OVER =====\n\n");
+            for (int i = 0; i < NUM_PLAYERS; i++) {
+                int tiles_remaining = count_remaining_tiles(&env, i);
+                printf("Player %d: %d points (Tiles placed), %d tiles remaining\n", 
+                    i + 1, env.state.players[i].score, tiles_remaining);
+            }
+            
+            // Find winner(s)
+            int max_score = -1;
+            for (int i = 0; i < NUM_PLAYERS; i++) {
+                if (env.state.players[i].score > max_score) {
+                    max_score = env.state.players[i].score;
+                }
+            }
+            
+            printf("\nWinner(s): ");
+            bool first_winner = true;
+            for (int i = 0; i < NUM_PLAYERS; i++) {
+                if (env.state.players[i].score == max_score) {
+                    if (!first_winner) printf(", ");
+                    printf("Player %d", i + 1);
+                    first_winner = false;
+                }
+            }
+            printf("\n");
         }
     }
-    printf("\n");
 }
 
 void play_game() {
-    BlokusEnv env;
-    init_env(&env);
     
+    BlokusEnv env;
+
+    init_env(&env);
+
     while (!env.state.game_over) {
         display_board(&env.state);
+        
+        // Show current scores including remaining tiles
+        display_scores(&env);
         
         Action action;
         int player = env.state.current_player;
@@ -207,12 +253,12 @@ void play_game() {
         } else {  // Random agent
             action = get_random_action(&env);
             printf("\nPlayer %d plays piece %d (orientation %d) at (%d, %d)\n", 
-                   player + 1, action.piece_idx, action.orientation,
-                   action.position.x, action.position.y);
+                player + 1, action.piece_idx, action.orientation,
+                action.position.x, action.position.y);
         }
         
         float reward;
-        bool game_over = step(&env, &action, &reward);
+        bool game_over = step(&env, &action, &reward, false);
         
         if (game_over) {
             env.state.game_over = true;
@@ -224,7 +270,9 @@ void play_game() {
     
     printf("\n===== GAME OVER =====\n\n");
     for (int i = 0; i < NUM_PLAYERS; i++) {
-        printf("Player %d score: %d\n", i + 1, env.state.players[i].score);
+        int tiles_remaining = count_remaining_tiles(&env, i);
+        printf("Player %d: %d points (Tiles placed), %d tiles remaining\n", 
+               i + 1, env.state.players[i].score, tiles_remaining);
     }
     
     // Find winner(s)

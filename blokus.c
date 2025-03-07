@@ -674,7 +674,7 @@ bool is_valid_action(const BlokusEnv *env, int player, const Action *action) {
     }
 }
 
-void apply_action(BlokusEnv *env, const Action *action) {
+void apply_action(BlokusEnv *env, const Action *action, bool fast) {
     GameState *state = &env->state;
     int player = state->current_player;
     const PieceType *piece_type = &env->piece_types[action->piece_idx];
@@ -711,7 +711,9 @@ void apply_action(BlokusEnv *env, const Action *action) {
         }
         
         // Current player has to pass
-        printf("Player %d has no valid moves and passes.\n", player + 1);
+        if (!fast) {
+            printf("Player %d has no valid moves and passes.\n", player + 1);
+        }
         state->current_player = (state->current_player + 1) % NUM_PLAYERS;
         consecutive_passes++;
     }
@@ -861,7 +863,7 @@ void init_env(BlokusEnv *env) {
     init_piece_types(env->piece_types);
 }
 
-bool step(BlokusEnv *env, const Action *action, float *reward) {
+bool step(BlokusEnv *env, const Action *action, float *reward, bool fast) {
     int player = env->state.current_player;
     
     // Check if action is valid
@@ -871,7 +873,7 @@ bool step(BlokusEnv *env, const Action *action, float *reward) {
     }
     
     // Apply the action
-    apply_action(env, action);
+    apply_action(env, action, fast);
     
     // Simple reward: the size of the piece placed
     const PieceType *piece_type = &env->piece_types[action->piece_idx];

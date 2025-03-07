@@ -60,14 +60,14 @@ typedef struct {
 // Core game functions
 void init_game(GameState *state);
 bool is_valid_action(const BlokusEnv *env, int player, const Action *action);
-void apply_action(BlokusEnv *env, const Action *action);
+void apply_action(BlokusEnv *env, const Action *action, bool fast);
 int get_valid_actions(const BlokusEnv *env, int player, Action *actions, int max_actions);
 bool is_game_over(const BlokusEnv *env);
 void calculate_scores(GameState *state);
 
 // RL environment functions
 void init_env(BlokusEnv *env);
-bool step(BlokusEnv *env, const Action *action, float *reward);
+bool step(BlokusEnv *env, const Action *action, float *reward, bool fast);
 void reset_env(BlokusEnv *env);
 Action get_random_action(const BlokusEnv *env);
 

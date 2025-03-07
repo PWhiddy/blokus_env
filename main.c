@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>  // For usleep
 
 void print_piece(const BlokusEnv *env, int piece_idx, int orientation) {
     if (piece_idx < 0 || piece_idx >= NUM_PIECE_TYPES) {
@@ -108,6 +109,78 @@ Action get_human_action(const BlokusEnv *env) {
     }
 }
 
+void play_auto_game() {
+    BlokusEnv env;
+    init_env(&env);
+    
+    int turn_count = 0;
+    
+    while (!env.state.game_over) {
+        // Clear screen (ANSI escape code)
+        printf("\033[2J\033[H");
+        
+        // Show turn number
+        printf("Turn: %d\n", turn_count++);
+        
+        // Show only the game board
+        display_board(&env.state);
+        
+        Action action;
+        int player = env.state.current_player;
+        
+        // Check if any actions are possible
+        Action possible_actions[1];
+        int num_actions = get_valid_actions(&env, player, possible_actions, 1);
+        
+        if (num_actions == 0) {
+            env.state.current_player = (env.state.current_player + 1) % NUM_PLAYERS;
+            continue;
+        }
+        
+        // All players are random agents
+        action = get_random_action(&env);
+        
+        float reward;
+        bool game_over = step(&env, &action, &reward);
+        
+        if (game_over) {
+            env.state.game_over = true;
+        }
+        
+        // Sleep for 250ms (4 moves per second)
+        usleep(250000);
+    }
+    
+    // Game over
+    printf("\033[2J\033[H");  // Clear screen
+    printf("Final board state:\n");
+    display_board(&env.state);
+    
+    printf("\n===== GAME OVER =====\n\n");
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        printf("Player %d score: %d\n", i + 1, env.state.players[i].score);
+    }
+    
+    // Find winner(s)
+    int max_score = -1;
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        if (env.state.players[i].score > max_score) {
+            max_score = env.state.players[i].score;
+        }
+    }
+    
+    printf("\nWinner(s): ");
+    bool first_winner = true;
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        if (env.state.players[i].score == max_score) {
+            if (!first_winner) printf(", ");
+            printf("Player %d", i + 1);
+            first_winner = false;
+        }
+    }
+    printf("\n");
+}
+
 void play_game() {
     BlokusEnv env;
     init_env(&env);
@@ -174,14 +247,28 @@ void play_game() {
     printf("\n");
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     srand(time(NULL));  // Initialize random seed
     
-    printf("Welcome to Blokus!\n");
-    printf("You are Player 1 (Blue), playing against 3 random agents.\n");
-    printf("Let's begin!\n\n");
+    // Check for --auto flag
+    bool auto_mode = false;
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--auto") == 0) {
+            auto_mode = true;
+            break;
+        }
+    }
     
-    play_game();
+    if (auto_mode) {
+        printf("Running in auto mode with 4 random agents (4 moves per second).\n");
+        printf("Press Ctrl+C to exit.\n\n");
+        play_auto_game();
+    } else {
+        printf("Welcome to Blokus!\n");
+        printf("You are Player 1 (Blue), playing against 3 random agents.\n");
+        printf("Let's begin!\n\n");
+        play_game();
+    }
     
     return 0;
 }

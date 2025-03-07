@@ -445,7 +445,129 @@ void init_piece_types(PieceType piece_types[NUM_PIECE_TYPES]) {
     piece_types[16].orientations[3].blocks[3] = (Point){1, 1};
     piece_types[16].orientations[3].blocks[4] = (Point){2, 1};
     
-    // Initialize the remaining pieces (17-21) similarly...
+    // 17. Pentomino T
+    piece_types[17].num_orientations = 4; // 4 rotations
+    // T shape
+    piece_types[17].orientations[0].size = 5;
+    piece_types[17].orientations[0].blocks[0] = (Point){0, 0};
+    piece_types[17].orientations[0].blocks[1] = (Point){1, 0};
+    piece_types[17].orientations[0].blocks[2] = (Point){2, 0};
+    piece_types[17].orientations[0].blocks[3] = (Point){1, 1};
+    piece_types[17].orientations[0].blocks[4] = (Point){1, 2};
+    // Rotated 90°
+    piece_types[17].orientations[1].size = 5;
+    piece_types[17].orientations[1].blocks[0] = (Point){0, 1};
+    piece_types[17].orientations[1].blocks[1] = (Point){1, 0};
+    piece_types[17].orientations[1].blocks[2] = (Point){1, 1};
+    piece_types[17].orientations[1].blocks[3] = (Point){1, 2};
+    piece_types[17].orientations[1].blocks[4] = (Point){2, 1};
+    // Rotated 180°
+    piece_types[17].orientations[2].size = 5;
+    piece_types[17].orientations[2].blocks[0] = (Point){1, 0};
+    piece_types[17].orientations[2].blocks[1] = (Point){1, 1};
+    piece_types[17].orientations[2].blocks[2] = (Point){0, 2};
+    piece_types[17].orientations[2].blocks[3] = (Point){1, 2};
+    piece_types[17].orientations[2].blocks[4] = (Point){2, 2};
+    // Rotated 270°
+    piece_types[17].orientations[3].size = 5;
+    piece_types[17].orientations[3].blocks[0] = (Point){0, 0};
+    piece_types[17].orientations[3].blocks[1] = (Point){0, 1};
+    piece_types[17].orientations[3].blocks[2] = (Point){0, 2};
+    piece_types[17].orientations[3].blocks[3] = (Point){1, 1};
+    piece_types[17].orientations[3].blocks[4] = (Point){-1, 1};
+
+    // 18. Pentomino W
+    piece_types[18].num_orientations = 4; // 4 rotations
+    // W shape
+    piece_types[18].orientations[0].size = 5;
+    piece_types[18].orientations[0].blocks[0] = (Point){0, 0};
+    piece_types[18].orientations[0].blocks[1] = (Point){0, 1};
+    piece_types[18].orientations[0].blocks[2] = (Point){1, 1};
+    piece_types[18].orientations[0].blocks[3] = (Point){1, 2};
+    piece_types[18].orientations[0].blocks[4] = (Point){2, 2};
+    // Rotated 90°
+    piece_types[18].orientations[1].size = 5;
+    piece_types[18].orientations[1].blocks[0] = (Point){1, 0};
+    piece_types[18].orientations[1].blocks[1] = (Point){2, 0};
+    piece_types[18].orientations[1].blocks[2] = (Point){0, 1};
+    piece_types[18].orientations[1].blocks[3] = (Point){1, 1};
+    piece_types[18].orientations[1].blocks[4] = (Point){0, 2};
+    // Rotated 180°
+    piece_types[18].orientations[2].size = 5;
+    piece_types[18].orientations[2].blocks[0] = (Point){0, 0};
+    piece_types[18].orientations[2].blocks[1] = (Point){1, 0};
+    piece_types[18].orientations[2].blocks[2] = (Point){1, 1};
+    piece_types[18].orientations[2].blocks[3] = (Point){2, 1};
+    piece_types[18].orientations[2].blocks[4] = (Point){2, 2};
+    // Rotated 270°
+    piece_types[18].orientations[3].size = 5;
+    piece_types[18].orientations[3].blocks[0] = (Point){2, 0};
+    piece_types[18].orientations[3].blocks[1] = (Point){1, 1};
+    piece_types[18].orientations[3].blocks[2] = (Point){2, 1};
+    piece_types[18].orientations[3].blocks[3] = (Point){0, 2};
+    piece_types[18].orientations[3].blocks[4] = (Point){1, 2};
+
+    // 19. Pentomino V
+    piece_types[19].num_orientations = 4; // 4 rotations
+    // V shape
+    piece_types[19].orientations[0].size = 5;
+    piece_types[19].orientations[0].blocks[0] = (Point){0, 0};
+    piece_types[19].orientations[0].blocks[1] = (Point){0, 1};
+    piece_types[19].orientations[0].blocks[2] = (Point){0, 2};
+    piece_types[19].orientations[0].blocks[3] = (Point){1, 0};
+    piece_types[19].orientations[0].blocks[4] = (Point){2, 0};
+    // Rotated 90°
+    piece_types[19].orientations[1].size = 5;
+    piece_types[19].orientations[1].blocks[0] = (Point){0, 0};
+    piece_types[19].orientations[1].blocks[1] = (Point){1, 0};
+    piece_types[19].orientations[1].blocks[2] = (Point){2, 0};
+    piece_types[19].orientations[1].blocks[3] = (Point){2, 1};
+    piece_types[19].orientations[1].blocks[4] = (Point){2, 2};
+    // Rotated 180°
+    piece_types[19].orientations[2].size = 5;
+    piece_types[19].orientations[2].blocks[0] = (Point){0, 2};
+    piece_types[19].orientations[2].blocks[1] = (Point){1, 2};
+    piece_types[19].orientations[2].blocks[2] = (Point){2, 0};
+    piece_types[19].orientations[2].blocks[3] = (Point){2, 1};
+    piece_types[19].orientations[2].blocks[4] = (Point){2, 2};
+    // Rotated 270°
+    piece_types[19].orientations[3].size = 5;
+    piece_types[19].orientations[3].blocks[0] = (Point){0, 0};
+    piece_types[19].orientations[3].blocks[1] = (Point){0, 1};
+    piece_types[19].orientations[3].blocks[2] = (Point){0, 2};
+    piece_types[19].orientations[3].blocks[3] = (Point){1, 2};
+    piece_types[19].orientations[3].blocks[4] = (Point){2, 2};
+
+    // 20. Pentomino Z
+    piece_types[20].num_orientations = 4; // 2 rotations × 2 reflections
+    // Z shape
+    piece_types[20].orientations[0].size = 5;
+    piece_types[20].orientations[0].blocks[0] = (Point){0, 0};
+    piece_types[20].orientations[0].blocks[1] = (Point){1, 0};
+    piece_types[20].orientations[0].blocks[2] = (Point){1, 1};
+    piece_types[20].orientations[0].blocks[3] = (Point){1, 2};
+    piece_types[20].orientations[0].blocks[4] = (Point){2, 2};
+    // Rotated 90°
+    piece_types[20].orientations[1].size = 5;
+    piece_types[20].orientations[1].blocks[0] = (Point){0, 1};
+    piece_types[20].orientations[1].blocks[1] = (Point){1, 1};
+    piece_types[20].orientations[1].blocks[2] = (Point){2, 1};
+    piece_types[20].orientations[1].blocks[3] = (Point){0, 2};
+    piece_types[20].orientations[1].blocks[4] = (Point){2, 0};
+    // Mirrored Z shape
+    piece_types[20].orientations[2].size = 5;
+    piece_types[20].orientations[2].blocks[0] = (Point){0, 2};
+    piece_types[20].orientations[2].blocks[1] = (Point){1, 0};
+    piece_types[20].orientations[2].blocks[2] = (Point){1, 1};
+    piece_types[20].orientations[2].blocks[3] = (Point){1, 2};
+    piece_types[20].orientations[2].blocks[4] = (Point){2, 0};
+    // Mirrored + Rotated 90°
+    piece_types[20].orientations[3].size = 5;
+    piece_types[20].orientations[3].blocks[0] = (Point){0, 0};
+    piece_types[20].orientations[3].blocks[1] = (Point){0, 1};
+    piece_types[20].orientations[3].blocks[2] = (Point){1, 1};
+    piece_types[20].orientations[3].blocks[3] = (Point){2, 1};
+    piece_types[20].orientations[3].blocks[4] = (Point){2, 2};
 }
 
 void init_game(GameState *state) {

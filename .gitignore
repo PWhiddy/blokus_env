@@ -1,1 +1,3 @@
 blokus
+*.o
+.vscode
